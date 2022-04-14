@@ -1,0 +1,27 @@
+body {
+    display: flex;
+    align-items: center;
+    font-family: "Poppins", sans-serif;
+}
+
+img {
+    height: 23px;
+    width: 23px;
+    margin: 7.8px 11px;
+}
+
+input {
+    display: flex;
+    font-size: 19px;
+    background-color: transparent;
+    border: none;
+    margin-top: 3px;
+    outline: none;
+    color: #eeeeee;
+    width: 500px;
+    font-family: "Poppins", sans-serif !important;
+}
+
+input::placeholder {
+    color: #eeeeee83;
+}
