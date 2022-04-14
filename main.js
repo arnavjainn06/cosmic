@@ -17,7 +17,44 @@ const assetsDirectory = path.join(__dirname, "assets");
 let window;
 let tray;
 
+let prefs;
+
 let contextMenu;
+
+const openPrefs = () => {
+    prefs = new BrowserWindow({
+        height: 400,
+        width: 360,
+        // transparent: true,
+        // center: true,
+        fullscreenable: false,
+        vibrancy: "popover",
+        minimizable: true,
+        // movable: true,
+        // frame: false,
+        resizable: false,
+        roundedCorners: true,
+        titleBarStyle: "hidden",
+        titleBarOverlay: true,
+        trafficLightPosition: { x: 10, y: 15 },
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false, // trigger require isolation
+            backgroundThrottling: false,
+            devTools: true,
+        },
+    });
+
+    prefs.loadURL(`file://${path.join(__dirname, "prefs.html")}`);
+
+    if (process.platform == "darwin") {
+        // Don't show the app in the dock for macOS
+        app.dock.hide();
+    } else {
+        // To hide the app in the dock for windows and linux
+        window.setSkipTaskbar(true);
+    }
+};
 
 app.on("ready", () => {
     initializeApp();
@@ -45,13 +82,24 @@ const initializeTray = () => {
     tray.on("right-click", () => {
         const menu = [
             {
-                role: "quit",
-                accelerator: "Command+Q",
+                label: "Preferences",
+                role: "preferences",
+                accelerator: "Cmd+,",
+                click: openPrefs,
             },
             {
                 label: "Toggle Cosmic",
                 accelerator: "Ctrl+Space",
                 click: toggleCadburyVisibility,
+            },
+            {
+                label: "Refresh on exit",
+                type: "radio",
+                checked: true,
+            },
+            {
+                role: "quit",
+                accelerator: "Command+Q",
             },
         ];
         tray.popUpContextMenu(Menu.buildFromTemplate(menu));
@@ -81,7 +129,6 @@ const initializeApp = () => {
             devTools: true,
         },
     });
-
     // window.webContents.toggleDevTools();
 
     window.loadURL(`file://${path.join(__dirname, "index.html")}`);
