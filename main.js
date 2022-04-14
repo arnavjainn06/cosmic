@@ -5,6 +5,7 @@ const {
     Tray,
     systemPreferences,
     shell,
+    Menu,
     ipcMain,
 } = require("electron");
 const open = require("open");
@@ -16,9 +17,18 @@ const assetsDirectory = path.join(__dirname, "assets");
 let window;
 let tray;
 
+let contextMenu;
+
 app.on("ready", () => {
     initializeApp();
     initializeTray();
+
+    contextMenu = Menu.buildFromTemplate([
+        { label: "Item1", type: "radio" },
+        { label: "Item2", type: "radio" },
+        { label: "Item3", type: "radio", checked: true },
+        { label: "Item4", type: "radio" },
+    ]);
 });
 
 app.on("window-all-closed", () => {
@@ -29,15 +39,28 @@ const initializeTray = () => {
     if (process.platform == "win32") {
         tray = new Tray(path.join(assetsDirectory, "tray_icon_win.png"));
     } else {
-        tray = new Tray(path.join(assetsDirectory, "tray_icon.png"));
+        tray = new Tray(path.join(assetsDirectory, "cosmicicon@2x.png"));
     }
 
-    tray.on("right-click", toggleCadburyVisibility);
+    tray.on("right-click", () => {
+        const menu = [
+            {
+                role: "quit",
+                accelerator: "Command+Q",
+            },
+            {
+                label: "Toggle Cosmic",
+                accelerator: "Ctrl+Space",
+                click: toggleCadburyVisibility,
+            },
+        ];
+        tray.popUpContextMenu(Menu.buildFromTemplate(menu));
+    });
     tray.on("double-click", toggleCadburyVisibility);
     tray.on("click", function (event) {
         toggleCadburyVisibility();
     });
-    tray.setToolTip("Cadbury Search");
+    tray.setToolTip("Cosmic Search");
 };
 
 const initializeApp = () => {
@@ -45,15 +68,9 @@ const initializeApp = () => {
         height: 56,
         width: 680,
         transparent: true,
-        // thickFrame: false,
-        // hasShadow: true,
-        // show: false,
-        // alwaysOnTop: true,
-        // focusable: true,
         center: true,
         fullscreenable: false,
-        vibrancy: "dark",
-        type: "textured",
+        vibrancy: "popover",
         minimizable: false,
         frame: false,
         resizable: false,
@@ -112,6 +129,8 @@ const toggleCadburyVisibility = () => {
 };
 
 const launchCadbury = () => {
+    // window.setVisibleOnAllWorkspaces(true); // put the window on all screens
+    window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
     window.reload();
     window.setSize(680, 56);
     // setTimeout(() => {
@@ -132,9 +151,14 @@ const destroyCadbury = () => {
     }
 };
 
-ipcMain.on("msg", (event, data) => {
+ipcMain.on("expand", (event, data) => {
     console.log(data);
     window.setSize(680, 430);
+});
+
+ipcMain.on("shrink", (event, data) => {
+    console.log(data);
+    window.setSize(680, 56);
 });
 
 // This returns the same result is ls

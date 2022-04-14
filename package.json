@@ -1,5 +1,5 @@
 {
-  "name": "cosmic",
+  "name": "Cosmic",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/arnavjainn06/cosmic#readme",
   "dependencies": {
     "electron": "^12.0.9",
+    "electron-store": "^8.0.1",
     "findit": "^2.0.0",
     "open": "^8.0.9"
   }
